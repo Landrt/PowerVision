@@ -1,0 +1,99 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // users/{uid}: Owner-only read and write
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+
+      match /notifications/{notificationId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // zones/{zoneId}: Authenticated read
+    match /zones/{zoneId} {
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+    }
+
+    // incidents/{incidentId}: Authenticated read
+    match /incidents/{incidentId} {
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+
+      match /evidence/{evidenceId} {
+        allow read, create, update, delete: if false;
+      }
+    }
+
+    // Client direct writes strictly restricted (deny create, update, delete)
+    match /devices/{deviceId} {
+      allow read: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /installations/{installationId} {
+      allow read: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /syncBatches/{batchId} {
+      allow read: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /deviceEvents/{eventId} {
+      allow read: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /evidence/{evidenceId} {
+      allow read: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /consents/{consentId} {
+      allow read: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /auditLogs/{logId} {
+      allow read: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /maintenanceWindows/{windowId} {
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+    }
+
+    // communityPosts/{postId}: Authenticated read. Write allowed for user posts (request.auth.uid == resource.data.authorUid && !request.resource.data.isOfficial)
+    match /communityPosts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.isOfficial == false;
+      allow update: if signedIn()
+        && resource.data.authorUid == request.auth.uid
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.isOfficial == false;
+      allow delete: if signedIn()
+        && resource.data.authorUid == request.auth.uid
+        && resource.data.isOfficial == false;
+    }
+
+    // Default deny for all unspecified paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

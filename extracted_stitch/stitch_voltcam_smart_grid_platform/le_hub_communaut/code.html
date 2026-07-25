@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>VoltCam Hub - Communauté</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Design System Tokens -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "primary-container": "#004b87",
+                "secondary-container": "#fe6b00",
+                "inverse-on-surface": "#edf0ff",
+                "primary-fixed": "#d3e4ff",
+                "error": "#ba1a1a",
+                "outline-variant": "#c2c6d1",
+                "surface-container": "#e9edff",
+                "background": "#f9f9ff",
+                "inverse-surface": "#293040",
+                "surface-variant": "#dce2f7",
+                "on-tertiary": "#ffffff",
+                "primary-fixed-dim": "#a3c9ff",
+                "surface-dim": "#d3daef",
+                "on-surface": "#141b2b",
+                "secondary": "#a04100",
+                "surface": "#f9f9ff",
+                "on-secondary": "#ffffff",
+                "on-primary-container": "#8abcff",
+                "tertiary-fixed-dim": "#59df89",
+                "outline": "#727781",
+                "on-surface-variant": "#424750",
+                "on-secondary-container": "#572000",
+                "surface-bright": "#f9f9ff",
+                "primary": "#003461",
+                "tertiary-container": "#00562b",
+                "on-secondary-fixed": "#351000",
+                "on-error-container": "#93000a",
+                "on-primary": "#ffffff",
+                "inverse-primary": "#a3c9ff",
+                "on-tertiary-fixed-variant": "#005228",
+                "secondary-fixed-dim": "#ffb693",
+                "on-tertiary-container": "#4ad27d",
+                "secondary-fixed": "#ffdbcc",
+                "surface-container-highest": "#dce2f7",
+                "on-background": "#141b2b",
+                "tertiary": "#003c1c",
+                "error-container": "#ffdad6",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#e1e8fd",
+                "on-primary-fixed": "#001c38",
+                "on-primary-fixed-variant": "#004882",
+                "surface-container-low": "#f1f3ff",
+                "on-secondary-fixed-variant": "#7a3000",
+                "on-tertiary-fixed": "#00210d",
+                "tertiary-fixed": "#77fca3",
+                "surface-tint": "#27609d",
+                "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "margin-mobile": "20px",
+                "xl": "32px",
+                "xs": "4px",
+                "base": "8px",
+                "lg": "24px",
+                "sm": "8px",
+                "md": "16px",
+                "gutter": "16px"
+            },
+            "fontFamily": {
+                "status-label": ["Inter"],
+                "hero-lg": ["Inter"],
+                "caption": ["Inter"],
+                "card-title": ["Inter"],
+                "section-title": ["Inter"],
+                "body-md": ["Inter"]
+            },
+            "fontSize": {
+                "status-label": ["12px", {"lineHeight": "16px", "fontWeight": "700"}],
+                "hero-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "caption": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                "card-title": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                "section-title": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .pulse-active {
+            box-shadow: 0 0 0 0 rgba(74, 210, 125, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(74, 210, 125, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(74, 210, 125, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 210, 125, 0); }
+        }
+        .pulse-error {
+            box-shadow: 0 0 0 0 rgba(254, 107, 0, 0.4);
+            animation: pulse-error 2s infinite;
+        }
+        @keyframes pulse-error {
+            0% { box-shadow: 0 0 0 0 rgba(254, 107, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(254, 107, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(254, 107, 0, 0); }
+        }
+        body {
+            background-color: #f9f9ff;
+            font-family: 'Inter', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface antialiased overflow-x-hidden pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-sm">
+<div class="flex justify-between items-center px-margin-mobile py-md w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-md">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover ring-2 ring-primary/10" data-alt="A professional close-up portrait of a Cameroonian man named Patrick with a friendly expression. He is wearing a clean corporate shirt. The background is a soft-focus office interior with a primary blue and white color palette, reflecting a high-end tech company aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMSwgXTTOJcywgXMLZY8EO3__rP_bJ3q7shHYlkwfoQYhDRLi2IhDFZ8khyIH0k1fKhbYiZOUpeBae93yz7vx9l3mHOnFQCEBGuRMa6-rEJCJNVMN1qicbl9Mh2qpX3UIUjR-q4M-mH1vm04JNRMrGDjhvUIg67pnNQF36Ox3iJL-FViWhkuMobKMjT06-IVqUxd6MVWDG5AIb-9Vat0qySOOmM48A8ugJZJJ4LX94Gz3_158XS2jX"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-tertiary-fixed-dim rounded-full border-2 border-white pulse-active"></div>
+</div>
+<div>
+<h1 class="font-section-title text-section-title text-primary">Bonjour Patrick 👋</h1>
+<p class="font-caption text-caption text-on-surface-variant flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+                        Le réseau est stable dans votre quartier.
+                    </p>
+</div>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+</div>
+</header>
+<main class="mt-24 px-margin-mobile max-w-7xl mx-auto space-y-lg">
+<!-- Official Carousel Section -->
+<section>
+<div class="flex items-center justify-between mb-md">
+<h2 class="font-section-title text-section-title text-on-surface">Canal Officiel</h2>
+<span class="font-status-label text-status-label text-primary">Voir tout</span>
+</div>
+<div class="flex gap-md overflow-x-auto hide-scrollbar -mx-margin-mobile px-margin-mobile pb-sm">
+<!-- Maintenance Card -->
+<div class="min-w-[300px] bg-primary-container text-white p-lg rounded-xl shadow-md flex flex-col justify-between relative overflow-hidden group active:scale-[0.98] transition-transform">
+<div class="absolute -right-4 -top-4 opacity-10">
+<span class="material-symbols-outlined text-[100px]" style="font-variation-settings: 'FILL' 1;">engineering</span>
+</div>
+<div>
+<span class="inline-flex items-center gap-1 px-base py-xs bg-tertiary-container/30 border border-tertiary-fixed-dim/50 rounded-full font-status-label text-status-label text-tertiary-fixed">
+<span class="material-symbols-outlined text-[14px]">verified</span> Officiel
+                        </span>
+<h3 class="font-card-title text-card-title mt-md leading-snug">Maintenance planifiée (Bastos)</h3>
+</div>
+<div class="mt-xl">
+<p class="font-caption text-caption opacity-80">Samedi 08h00 - 14h00</p>
+<div class="mt-sm h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-fixed-dim w-1/3"></div>
+</div>
+</div>
+</div>
+<!-- Incident Card -->
+<div class="min-w-[300px] bg-surface-container text-on-surface p-lg rounded-xl border border-outline-variant/30 shadow-sm flex flex-col justify-between relative overflow-hidden active:scale-[0.98] transition-transform">
+<div>
+<span class="inline-flex items-center gap-1 px-base py-xs bg-error/10 border border-error/20 rounded-full font-status-label text-status-label text-error">
+<span class="material-symbols-outlined text-[14px]">warning</span> Incident technique
+                        </span>
+<h3 class="font-card-title text-card-title mt-md leading-snug text-primary">Coupure Logbessou</h3>
+</div>
+<div class="mt-xl">
+<p class="font-caption text-caption text-on-surface-variant">Équipes en cours d'intervention</p>
+<p class="font-status-label text-status-label text-secondary mt-1">Estimé: 1h 45m</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Community Feed -->
+<section class="space-y-md">
+<h2 class="font-section-title text-section-title text-on-surface">Dernières Alertes</h2>
+<!-- IoT Alert Card (Bento Style High Priority) -->
+<div class="bg-white rounded-xl p-lg border-2 border-secondary-container/30 shadow-lg relative overflow-hidden pulse-error">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-base">
+<div class="bg-secondary-container/10 p-sm rounded-lg">
+<span class="material-symbols-outlined text-secondary-container" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<p class="font-status-label text-status-label text-secondary">ALERTE SYSTÈME</p>
+<h3 class="font-card-title text-card-title text-on-surface leading-tight">COUPURE NON PLANIFIÉE DÉTECTÉE</h3>
+</div>
+</div>
+<div class="bg-secondary-container text-white px-base py-xs rounded-lg font-status-label text-status-label">
+                        98% Confiance
+                    </div>
+</div>
+<div class="mt-lg grid grid-cols-2 gap-md">
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="font-caption text-caption text-on-surface-variant">Localisation</p>
+<p class="font-body-md text-body-md font-bold text-primary">Quartier Essos</p>
+</div>
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="font-caption text-caption text-on-surface-variant">Impact</p>
+<p class="font-body-md text-body-md font-bold text-primary">42 boîtiers</p>
+</div>
+</div>
+<div class="mt-md flex items-center gap-base text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span class="font-caption text-caption">Il y a 3 minutes • Signalement automatique</span>
+</div>
+</div>
+<!-- Community Card 1 -->
+<div class="bg-white rounded-xl p-lg shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-outline-variant/10 group active:bg-surface-container-low transition-colors">
+<div class="flex gap-md">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A portrait of a Cameroonian woman in her late 30s named Marie. She has a warm smile and is sitting in a brightly lit modern living room in the Bonapriso neighborhood of Douala. The lighting is soft and natural, emphasizing a premium and cozy home environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLu-fxpKdnXcNEVNpIEtw4RHUgpQbjpMTN3B7mZ5DCOIiWzEOs6wVt8swPLXo44oqY6yBRBcRW7EjC4kD77SDF1QvP5_qdB05n7cJc0em3SRVWrv-MjfqJqlShHeNiBz1uMyhdK8ZAe5E4y0CmRKx4LXHCy0ysFJEdR1cn5FZR68ReARRyrVYbsMl71oZ-KobTX4FKDnF982FwzgkuQaVt0UIJa1gVNa4FFU968wfdE4o9kRDM2o_j"/>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-card-title text-card-title text-primary leading-none">Marie T.</h4>
+<p class="font-caption text-caption text-on-surface-variant">Bonapriso • Il y a 12m</p>
+</div>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<p class="mt-md font-body-md text-body-md text-on-surface leading-relaxed">
+                            Le courant est revenu mais la tension reste instable autour de <span class="text-secondary font-bold">160V</span>. Faites attention à vos appareils sensibles ! ⚡️
+                        </p>
+<div class="mt-md flex items-center gap-lg">
+<button class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">thumb_up</span>
+<span class="font-status-label text-status-label">24</span>
+</button>
+<button class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+<span class="font-status-label text-status-label">8</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Community Card 2 (User Feedback) -->
+<div class="bg-white rounded-xl p-lg shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-outline-variant/10">
+<div class="flex gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-primary">JS</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-card-title text-card-title text-primary leading-none">Jean-Samuel K.</h4>
+<p class="font-caption text-caption text-on-surface-variant">Mendong • Il y a 45m</p>
+</div>
+</div>
+<p class="mt-md font-body-md text-body-md text-on-surface">
+                            Coupure générale ici depuis 14h. Quelqu'un a des infos pour le secteur lycée ?
+                        </p>
+<!-- Inline Image Placeholder for Post -->
+<div class="mt-md rounded-lg overflow-hidden h-32 relative">
+<div class="w-full h-full bg-cover bg-center" data-alt="A photo taken from a smartphone showing a dark residential street at twilight in the Mendong neighborhood. The silhouette of houses and electric poles are visible against a deep blue sky. The atmosphere is quiet and still, representing a power outage in a modern African suburban area." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBzW8y107x7-OsZxcug05T_vbI-n-i0ZYe2-6bcU9cfH51Vr0SgBYjPnWMlShkVEvt1rSoOXJ-1tW3H1JvWc1RhFfuQzujBudbsZsAst6mWIb-er8Yhw5uOeIdouaaCc_vWjucIulcAmfZRU0J4TKKWNJWlWmiONEmza4prCykBcy3xMKxktsjSFn-DgShIrFeJSfuh8KaYdMnvo7zekxmV6Np6fzafe2tMkNuY8tGsOJ3aCmGBRBi9')"></div>
+</div>
+<div class="mt-md flex items-center gap-lg">
+<button class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">thumb_up</span>
+<span class="font-status-label text-status-label">12</span>
+</button>
+<button class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+<span class="font-status-label text-status-label">15</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button (FAB) -->
+<button class="fixed bottom-24 right-margin-mobile w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform z-40">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-white/80 backdrop-blur-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.1)] rounded-t-xl">
+<div class="flex justify-around items-center px-lg py-md pb-[max(16px,env(safe-area-inset-bottom))]">
+<!-- Communauté (Active) -->
+<a class="flex flex-col items-center justify-center text-primary font-bold transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-status-label text-status-label mt-1">Communauté</span>
+<div class="w-1 h-1 bg-primary rounded-full mt-1"></div>
+</a>
+<!-- Carte Live -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-status-label text-status-label mt-1">Carte Live</span>
+</a>
+<!-- Mon Boîtier -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">bolt</span>
+<span class="font-status-label text-status-label mt-1">Mon Boîtier</span>
+</a>
+</div>
+</nav>
+<script>
+        // Simple haptic feedback simulation & scroll effects
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('click', () => {
+                if (window.navigator.vibrate) {
+                    window.navigator.vibrate(10);
+                }
+            });
+        });
+
+        // Subtle header transformation on scroll
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                header.classList.add('py-sm');
+                header.classList.remove('py-md');
+            } else {
+                header.classList.add('py-md');
+                header.classList.remove('py-sm');
+            }
+        });
+    </script>
+</body></html>

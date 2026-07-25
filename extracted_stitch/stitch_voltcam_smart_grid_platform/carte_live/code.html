@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>VoltCam - Carte Live</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "primary-container": "#004b87",
+                "secondary-container": "#fe6b00",
+                "inverse-on-surface": "#edf0ff",
+                "primary-fixed": "#d3e4ff",
+                "error": "#ba1a1a",
+                "outline-variant": "#c2c6d1",
+                "surface-container": "#e9edff",
+                "background": "#f9f9ff",
+                "inverse-surface": "#293040",
+                "surface-variant": "#dce2f7",
+                "on-tertiary": "#ffffff",
+                "primary-fixed-dim": "#a3c9ff",
+                "surface-dim": "#d3daef",
+                "on-surface": "#141b2b",
+                "secondary": "#a04100",
+                "surface": "#f9f9ff",
+                "on-secondary": "#ffffff",
+                "on-primary-container": "#8abcff",
+                "tertiary-fixed-dim": "#59df89",
+                "outline": "#727781",
+                "on-surface-variant": "#424750",
+                "on-secondary-container": "#572000",
+                "surface-bright": "#f9f9ff",
+                "primary": "#003461",
+                "tertiary-container": "#00562b",
+                "on-secondary-fixed": "#351000",
+                "on-error-container": "#93000a",
+                "on-primary": "#ffffff",
+                "inverse-primary": "#a3c9ff",
+                "on-tertiary-fixed-variant": "#005228",
+                "secondary-fixed-dim": "#ffb693",
+                "on-tertiary-container": "#4ad27d",
+                "secondary-fixed": "#ffdbcc",
+                "surface-container-highest": "#dce2f7",
+                "on-background": "#141b2b",
+                "tertiary": "#003c1c",
+                "error-container": "#ffdad6",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#e1e8fd",
+                "on-primary-fixed": "#001c38",
+                "on-primary-fixed-variant": "#004882",
+                "surface-container-low": "#f1f3ff",
+                "on-secondary-fixed-variant": "#7a3000",
+                "on-tertiary-fixed": "#00210d",
+                "tertiary-fixed": "#77fca3",
+                "surface-tint": "#27609d",
+                "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "margin-mobile": "20px",
+                "xl": "32px",
+                "xs": "4px",
+                "base": "8px",
+                "lg": "24px",
+                "sm": "8px",
+                "md": "16px",
+                "gutter": "16px"
+            },
+            "fontFamily": {
+                "status-label": ["Inter"],
+                "hero-lg": ["Inter"],
+                "caption": ["Inter"],
+                "card-title": ["Inter"],
+                "section-title": ["Inter"],
+                "body-md": ["Inter"]
+            },
+            "fontSize": {
+                "status-label": ["12px", {"lineHeight": "16px", "fontWeight": "700"}],
+                "hero-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "caption": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                "card-title": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                "section-title": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .map-container {
+            height: calc(100vh - 64px);
+            width: 100%;
+        }
+
+        .pulse-dot {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            background-color: currentColor;
+            border-radius: 50%;
+        }
+
+        .pulse-dot::after {
+            content: '';
+            position: absolute;
+            top: -150%;
+            left: -150%;
+            width: 400%;
+            height: 400%;
+            border-radius: 50%;
+            background-color: currentColor;
+            opacity: 0.3;
+            animation: pulse-wave 2s infinite ease-out;
+        }
+
+        @keyframes pulse-wave {
+            0% { transform: scale(0.2); opacity: 0.6; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .bottom-sheet {
+            transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Top AppBar (JSON Content) -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-inverse-surface/80 backdrop-blur-xl shadow-sm">
+<div class="flex justify-between items-center px-margin-mobile py-md w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a young Cameroonian tech entrepreneur named Patrick, looking confident and friendly. He has short hair and is wearing a sleek navy blue polo shirt. The background is a blurred high-end modern office with soft daylight, maintaining a premium and corporate aesthetic consistent with the VoltCam brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvl5r9xj4Y1fFSjT6J_-d3iGm-9WkHh3AI2rgyltBzzZpVaAIJ3N3Q_MqyTtCoQmi26aFmhHTihJYkE1_lFMSy_1vi9hn1ytKXBN_vqnCEbKsW8auEwDtX52p23wQ3DKH7duKYffm4tWB4dum0mjBvrYCUfDmZ_kPLIRTV9lrDsMu5sG2kfwHh1NfYJdXlCZl9ZFCf5oDlK0klGTz2FxV1p4wByccuTM0YWByldbiDQ10V8tdLXy8Y"/>
+</div>
+<h1 class="font-hero-lg text-hero-lg tracking-tighter text-primary dark:text-primary-fixed-dim">VoltCam</h1>
+</div>
+<div class="flex items-center text-primary dark:text-primary-fixed-dim hover:opacity-80 transition-opacity cursor-pointer active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined text-[28px]">notifications</span>
+</div>
+</div>
+</header>
+<!-- Main Map Canvas -->
+<main class="relative pt-16 h-screen w-full overflow-hidden">
+<!-- Background Map Layer -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-[#f1f3ff]" data-alt="A sophisticated vector-style satellite map of Yaoundé, Cameroon, focusing on the Biyem-Assi and Bastos neighborhoods. The map features clean architectural outlines, soft gray streets, and subtle green park areas. Overlaid are translucent colored polygons in shades of soft red and green, representing power status. The aesthetic is minimalist, modern, and highly technical, like a premium utility monitoring dashboard." data-location="Yaounde" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCmewPVKVWjRkcxpVkB6Kw4Whkq-WFNy4CDc_ZGWj2YyXF-cmKF7rU_p-sTyzx_SlHPc38Wemag9gqwnGs3xUDD4zV8C2ZR2I4OtyQheVoxjwznTO5eWIRfU_x-1IAzNjwVihTG_35uNFFI9P-6asTSHLRm_zy1h4iHOl8W8vK5S8M4Nwm3qG99o4bgB7r47TRMfkLUxeO8y-kLxilPAnouPahB0WAic9a6YtjalWGaOgNBwJgyoPhg')"></div>
+<!-- Interactive Map Markers & Polygons (Simulated) -->
+<div class="absolute inset-0 pointer-events-none">
+<!-- Biyem-Assi Polygon (Red) -->
+<div class="absolute top-[55%] left-[30%] w-48 h-48 bg-error/10 border-2 border-error/30 rounded-[40px] rotate-12 flex items-center justify-center">
+<div class="text-error flex flex-col items-center">
+<div class="pulse-dot"></div>
+<span class="font-status-label text-[10px] mt-2 tracking-wider">BIYEM-ASSI</span>
+</div>
+</div>
+<!-- Bastos Polygon (Green) -->
+<div class="absolute top-[20%] left-[50%] w-56 h-40 bg-tertiary-fixed/10 border-2 border-tertiary-fixed/30 rounded-[30px] -rotate-6 flex items-center justify-center">
+<div class="text-on-tertiary-fixed-variant flex flex-col items-center">
+<div class="pulse-dot text-tertiary-fixed-dim"></div>
+<span class="font-status-label text-[10px] mt-2 tracking-wider">BASTOS</span>
+</div>
+</div>
+<!-- Akwa Polygon (Green) -->
+<div class="absolute top-[40%] right-[10%] w-32 h-32 bg-tertiary-fixed/10 border-2 border-tertiary-fixed/30 rounded-full flex items-center justify-center">
+<div class="text-on-tertiary-fixed-variant flex flex-col items-center">
+<div class="pulse-dot text-tertiary-fixed-dim"></div>
+<span class="font-status-label text-[10px] mt-2 tracking-wider">AKWA</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating UI Over Map -->
+<div class="relative z-10 p-margin-mobile flex flex-col gap-md">
+<!-- Search & Filters Container -->
+<div class="w-full max-w-lg mx-auto space-y-md">
+<!-- Search Bar -->
+<div class="glass-panel rounded-xl shadow-lg border border-white/20 flex items-center px-md py-3 gap-md">
+<span class="material-symbols-outlined text-outline">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-outline font-body-md" placeholder="Rechercher un quartier..." type="text"/>
+<span class="material-symbols-outlined text-outline">tune</span>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-sm overflow-x-auto no-scrollbar pb-2">
+<button class="flex-shrink-0 px-md py-2 bg-primary text-white rounded-full font-status-label text-status-label shadow-md">Toutes</button>
+<button class="flex-shrink-0 px-md py-2 glass-panel border border-error/20 text-error rounded-full font-status-label text-status-label flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-error"></span> Coupures
+                    </button>
+<button class="flex-shrink-0 px-md py-2 glass-panel border border-secondary/20 text-secondary rounded-full font-status-label text-status-label flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Maintenance
+                    </button>
+<button class="flex-shrink-0 px-md py-2 glass-panel border border-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant rounded-full font-status-label text-status-label flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span> Alimentées
+                    </button>
+</div>
+</div>
+</div>
+<!-- Bottom Sheet: Selected Neighborhood -->
+<div class="absolute bottom-20 left-0 right-0 z-20 px-margin-mobile bottom-sheet translate-y-0">
+<div class="max-w-md mx-auto bg-surface-container-lowest rounded-t-3xl shadow-[0_-8px_32px_rgba(0,0,0,0.12)] border-t border-white/20 p-lg pb-xl">
+<!-- Handle -->
+<div class="w-12 h-1.5 bg-outline-variant/30 rounded-full mx-auto mb-lg"></div>
+<div class="flex justify-between items-start mb-md">
+<div>
+<h2 class="font-section-title text-section-title text-on-surface">Biyem-Assi</h2>
+<p class="font-caption text-caption text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">location_on</span> Yaoundé VI
+                        </p>
+</div>
+<div class="px-md py-1 bg-error-container text-error rounded-lg font-status-label text-[10px] uppercase tracking-wider">
+                        Critique
+                    </div>
+</div>
+<div class="grid grid-cols-2 gap-md mb-lg">
+<div class="p-md bg-surface-container-low rounded-xl border border-surface-variant">
+<p class="font-caption text-[11px] text-outline uppercase mb-1">Status</p>
+<p class="font-card-title text-error text-[15px] leading-tight">Coupure non planifiée</p>
+</div>
+<div class="p-md bg-surface-container-low rounded-xl border border-surface-variant">
+<p class="font-caption text-[11px] text-outline uppercase mb-1">Durée</p>
+<p class="font-card-title text-on-surface text-[15px] leading-tight">14 min</p>
+</div>
+</div>
+<div class="mb-lg">
+<div class="flex justify-between items-center mb-base">
+<p class="font-body-md text-on-surface-variant text-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                            Détecté par <span class="font-bold text-primary">128 Boîtiers</span>
+</p>
+<p class="text-xs font-status-label text-primary">Intervention : 45%</p>
+</div>
+<div class="w-full h-2.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-1000 ease-out" style="width: 45%;"></div>
+</div>
+</div>
+<button class="w-full py-4 bg-primary text-white rounded-xl font-card-title flex items-center justify-center gap-md hover:brightness-110 active:scale-[0.98] transition-all">
+                    S'abonner aux alertes
+                    <span class="material-symbols-outlined">notifications_active</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (JSON Content Execution) -->
+<nav class="fixed bottom-0 w-full z-50 bg-white/80 dark:bg-black/80 backdrop-blur-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.1)] flex justify-around items-center px-lg py-md pb-safe">
+<!-- Communauté -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 dark:text-outline-variant/60 hover:text-primary dark:hover:text-primary-fixed-dim transition-all" href="#">
+<span class="material-symbols-outlined text-[26px]">groups</span>
+<span class="font-status-label text-status-label mt-1">Communauté</span>
+</a>
+<!-- Carte Live (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed-dim font-bold transition-all scale-110" href="#">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="font-status-label text-status-label mt-1">Carte Live</span>
+<div class="w-1 h-1 bg-primary rounded-full mt-0.5"></div>
+</a>
+<!-- Mon Boîtier -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 dark:text-outline-variant/60 hover:text-primary dark:hover:text-primary-fixed-dim transition-all" href="#">
+<span class="material-symbols-outlined text-[26px]">bolt</span>
+<span class="font-status-label text-status-label mt-1">Mon Boîtier</span>
+</a>
+</nav>
+<script>
+        // Simple Interaction logic for demo
+        document.addEventListener('DOMContentLoaded', () => {
+            const bottomSheet = document.querySelector('.bottom-sheet');
+            let isExpanded = true;
+
+            // Micro-interaction for markers
+            const pulseDots = document.querySelectorAll('.pulse-dot');
+            pulseDots.forEach(dot => {
+                dot.parentElement.parentElement.style.cursor = 'pointer';
+                dot.parentElement.parentElement.addEventListener('click', () => {
+                    // Logic to update bottom sheet content could go here
+                    console.log('Neighborhood selected');
+                });
+            });
+
+            // Randomizing the intervention progress bar for "live" feel
+            const progressBar = document.querySelector('.bg-primary.h-full');
+            setInterval(() => {
+                const currentWidth = parseInt(progressBar.style.width);
+                if (currentWidth < 98) {
+                    const newWidth = currentWidth + (Math.random() * 0.5);
+                    progressBar.style.width = `${newWidth}%`;
+                }
+            }, 3000);
+        });
+    </script>
+</body></html>

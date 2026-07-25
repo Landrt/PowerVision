@@ -1,0 +1,400 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CITIZEN
+  SUPPORT
+  ADMIN
+}
+
+enum HouseholdRole {
+  OWNER
+  MEMBER
+}
+
+enum DeviceStatus {
+  PROVISIONED
+  ONLINE
+  DEGRADED
+  OFFLINE
+  TAMPER_SUSPECTED
+  RETIRED
+}
+
+enum InstallationStatus {
+  ACTIVE
+  PAUSED
+  REMOVED
+}
+
+enum EventType {
+  OUTAGE
+  RESTORED
+  VOLTAGE_INSTABILITY
+  DEVICE_DISCONNECTED
+  TAMPER_SUSPECTED
+  ANOMALY_DETECTED
+}
+
+enum EventSource {
+  DEVICE
+  APP
+  SYSTEM
+}
+
+enum SyncStatus {
+  ACCEPTED
+  REJECTED
+  PARTIAL
+}
+
+enum IncidentType {
+  OUTAGE
+  VOLTAGE_QUALITY
+  ANOMALY
+}
+
+enum IncidentStatus {
+  PENDING
+  CONFIRMED
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationChannel {
+  PUSH
+  IN_APP
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  FAILED
+  READ
+}
+
+enum ConsentScope {
+  TELEMETRY_SYNC
+  AGGREGATED_MAP
+  PUSH_NOTIFICATIONS
+  COMMUNITY_CONTENT
+}
+
+enum ConsentStatus {
+  GRANTED
+  REVOKED
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum PostSource {
+  OFFICIAL
+  COMMUNITY
+}
+
+enum PostStatus {
+  PENDING
+  PUBLISHED
+  HIDDEN
+  ARCHIVED
+}
+
+model User {
+  id              String              @id @default(cuid())
+  firebaseUid     String              @unique
+  displayName     String?
+  locale          String              @default("fr-CM")
+  role            UserRole            @default(CITIZEN)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  memberships     HouseholdMember[]
+  devices         Device[]            @relation("DeviceOwner")
+  subscriptions   AlertSubscription[]
+  notifications   Notification[]
+  consents        Consent[]
+  auditLogs       AuditLog[]          @relation("AuditActor")
+  communityPosts  CommunityPost[]
+}
+
+model GridZone {
+  id                String                @id @default(cuid())
+  code              String                @unique
+  label             String
+  city              String
+  mapCell           String?               @unique
+  centroidLatitude  Decimal?              @db.Decimal(9, 6)
+  centroidLongitude Decimal?              @db.Decimal(9, 6)
+  isActive          Boolean               @default(true)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  households        Household[]
+  incidents         Incident[]
+  subscriptions     AlertSubscription[]
+  maintenanceWindows MaintenanceWindow[]
+  communityPosts    CommunityPost[]
+}
+
+model Household {
+  id            String               @id @default(cuid())
+  label         String?
+  zoneId        String
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  zone          GridZone             @relation(fields: [zoneId], references: [id], onDelete: Restrict)
+  members       HouseholdMember[]
+  installations DeviceInstallation[]
+
+  @@index([zoneId])
+}
+
+model HouseholdMember {
+  id          String        @id @default(cuid())
+  userId      String
+  householdId String
+  role        HouseholdRole @default(MEMBER)
+  createdAt   DateTime      @default(now())
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  household   Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, householdId])
+  @@index([householdId])
+}
+
+model Device {
+  id               String               @id @default(cuid())
+  hardwareId       String               @unique
+  model            String
+  firmwareVersion  String?
+  status           DeviceStatus         @default(PROVISIONED)
+  ownerId          String?
+  lastSeenAt       DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  owner            User?                @relation("DeviceOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  installations    DeviceInstallation[]
+  telemetrySamples TelemetrySample[]
+  deviceEvents     DeviceEvent[]
+  syncBatches      SyncBatch[]
+
+  @@index([ownerId])
+  @@index([status])
+}
+
+model DeviceInstallation {
+  id               String             @id @default(cuid())
+  deviceId         String
+  householdId      String
+  status           InstallationStatus @default(ACTIVE)
+  installedAt      DateTime           @default(now())
+  uninstalledAt    DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  device           Device             @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  household        Household          @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  telemetrySamples TelemetrySample[]
+  deviceEvents     DeviceEvent[]
+
+  @@index([deviceId, status])
+  @@index([householdId, status])
+}
+
+model SyncBatch {
+  id             String      @id @default(cuid())
+  deviceId       String
+  idempotencyKey String      @unique
+  status         SyncStatus  @default(ACCEPTED)
+  sentAt         DateTime
+  receivedAt     DateTime    @default(now())
+  sampleCount    Int         @default(0)
+  eventCount     Int         @default(0)
+  device         Device      @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  samples        TelemetrySample[]
+  events         DeviceEvent[]
+
+  @@index([deviceId, receivedAt])
+}
+
+model TelemetrySample {
+  id             String              @id @default(cuid())
+  deviceId       String
+  installationId String?
+  syncBatchId    String?
+  sequence       BigInt
+  sampledAt      DateTime
+  receivedAt     DateTime            @default(now())
+  voltageVolts   Decimal?            @db.Decimal(6, 2)
+  currentAmps    Decimal?            @db.Decimal(8, 3)
+  powerWatts     Decimal?            @db.Decimal(10, 2)
+  frequencyHertz Decimal?            @db.Decimal(5, 2)
+  batteryPercent Int?
+  qualityScore   Int?
+  device         Device              @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  installation   DeviceInstallation? @relation(fields: [installationId], references: [id], onDelete: SetNull)
+  syncBatch      SyncBatch?          @relation(fields: [syncBatchId], references: [id], onDelete: SetNull)
+
+  @@unique([deviceId, sequence])
+  @@index([installationId, sampledAt])
+  @@index([deviceId, sampledAt])
+}
+
+model DeviceEvent {
+  id             String              @id @default(cuid())
+  eventKey       String              @unique
+  deviceId       String
+  installationId String?
+  syncBatchId    String?
+  type           EventType
+  source         EventSource         @default(DEVICE)
+  occurredAt     DateTime
+  receivedAt     DateTime            @default(now())
+  confidence     Int?
+  lastGasp       Boolean             @default(false)
+  metadata       Json?
+  device         Device              @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  installation   DeviceInstallation? @relation(fields: [installationId], references: [id], onDelete: SetNull)
+  syncBatch      SyncBatch?          @relation(fields: [syncBatchId], references: [id], onDelete: SetNull)
+  evidence       IncidentEvidence?
+
+  @@index([deviceId, occurredAt])
+  @@index([installationId, type, occurredAt])
+}
+
+model Incident {
+  id                     String           @id @default(cuid())
+  zoneId                 String
+  type                   IncidentType
+  status                 IncidentStatus   @default(PENDING)
+  startedAt              DateTime
+  resolvedAt             DateTime?
+  confidenceScore        Int              @default(0)
+  independentDeviceCount Int              @default(0)
+  officialReference      String?
+  publicSummary          String?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  zone                   GridZone         @relation(fields: [zoneId], references: [id], onDelete: Restrict)
+  evidences              IncidentEvidence[]
+  notifications          Notification[]
+
+  @@index([zoneId, status, startedAt])
+  @@index([type, status])
+}
+
+model IncidentEvidence {
+  id            String      @id @default(cuid())
+  incidentId    String
+  deviceEventId String      @unique
+  weight        Int         @default(1)
+  createdAt     DateTime    @default(now())
+  incident      Incident    @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  deviceEvent   DeviceEvent @relation(fields: [deviceEventId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId])
+}
+
+model AlertSubscription {
+  id            String         @id @default(cuid())
+  userId        String
+  zoneId        String
+  incidentTypes IncidentType[]
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  zone          GridZone       @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, zoneId])
+  @@index([zoneId, isActive])
+}
+
+model Notification {
+  id         String             @id @default(cuid())
+  userId     String
+  incidentId String?
+  channel    NotificationChannel
+  status     NotificationStatus @default(QUEUED)
+  title      String
+  body       String
+  payload    Json?
+  sentAt     DateTime?
+  readAt     DateTime?
+  createdAt  DateTime           @default(now())
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  incident   Incident?          @relation(fields: [incidentId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status, createdAt])
+  @@index([incidentId])
+}
+
+model MaintenanceWindow {
+  id                String            @id @default(cuid())
+  zoneId            String
+  status            MaintenanceStatus @default(SCHEDULED)
+  startsAt          DateTime
+  endsAt            DateTime
+  officialReference String?
+  publicMessage     String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  zone              GridZone          @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@index([zoneId, status, startsAt])
+}
+
+model CommunityPost {
+  id          String     @id @default(cuid())
+  zoneId      String
+  authorId    String?
+  source      PostSource
+  status      PostStatus @default(PENDING)
+  title       String?
+  body        String
+  publishedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  zone        GridZone   @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  author      User?      @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([zoneId, status, publishedAt])
+  @@index([source, status])
+}
+
+model Consent {
+  id         String        @id @default(cuid())
+  userId     String
+  scope      ConsentScope
+  status     ConsentStatus
+  version    String
+  grantedAt  DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime      @default(now())
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, scope, createdAt])
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  actorId    String?
+  action     String
+  targetType String
+  targetId   String?
+  metadata   Json?
+  createdAt  DateTime  @default(now())
+  actor      User?     @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([targetType, targetId])
+}

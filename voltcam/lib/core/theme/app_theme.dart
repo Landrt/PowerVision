@@ -89,7 +89,7 @@ class AppTheme {
       ),
 
       // Card Theme
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: AppColors.surface,
         elevation: 1,
         shadowColor: Colors.black.withOpacity(0.08),
@@ -171,7 +171,7 @@ class AppTheme {
       ),
 
       // Dialog Theme
-      dialogTheme: DialogThemeData(
+      dialogTheme: DialogTheme(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -232,7 +232,7 @@ class AppTheme {
       ),
 
       // Card Theme
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: const Color(0xFF1E1E1E),
         elevation: 1,
         shadowColor: Colors.black.withOpacity(0.3),
@@ -308,7 +308,7 @@ class AppTheme {
       ),
 
       // Dialog Theme
-      dialogTheme: DialogThemeData(
+      dialogTheme: DialogTheme(
         backgroundColor: const Color(0xFF1E1E1E),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),

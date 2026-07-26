@@ -189,7 +189,7 @@ class _DeviceDashboardScreenState extends ConsumerState<DeviceDashboardScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.electricCyan.withValues(alpha: 0.15),
+                          color: AppColors.electricCyan.withOpacity(0.15),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.router_rounded, color: AppColors.electricCyan, size: 28),
